@@ -30,6 +30,8 @@ import (
 // `make codegen` to generate the new types under the client/clientset folder.
 // ***************************************************************************
 
+// zhou:
+
 // +genclient
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -93,12 +95,20 @@ type CephClusterList struct {
 	Items           []CephCluster `json:"items"`
 }
 
+// zhou: README,
+
 // ClusterSpec represents the specification of Ceph Cluster
 type ClusterSpec struct {
+
+	// zhou: The version information for launching the ceph daemons.
+
 	// The version information that instructs Rook to orchestrate a particular version of Ceph.
 	// +optional
 	// +nullable
 	CephVersion CephVersionSpec `json:"cephVersion,omitempty"`
+
+	// zhou: Storage selection and configuration that will be used across the cluster.
+	//       These settings can be overridden for specific nodes.
 
 	// A spec for available storage in the cluster and how it should be used
 	// +optional
@@ -122,6 +132,8 @@ type ClusterSpec struct {
 	// +optional
 	Placement PlacementSpec `json:"placement,omitempty"`
 
+	// zhou: For the network settings for the cluster.
+
 	// Network related configuration
 	// +kubebuilder:pruning:PreserveUnknownFields
 	// +nullable
@@ -140,15 +152,26 @@ type ClusterSpec struct {
 	// +optional
 	PriorityClassNames PriorityClassNamesSpec `json:"priorityClassNames,omitempty"`
 
+	// zhou: The path on the host where config and data should be stored for each of the services.
+	//       If the directory does not exist, it will be created. Because this directory persists on the host,
+	//       it will remain after pods are deleted.
+	//       Following paths and any of their subpaths must not be used: /etc/ceph, /rook or /var/log/ceph.
+
 	// The path on the host where config and data can be persisted
 	// +kubebuilder:validation:Pattern=`^/(\S+)`
 	// +kubebuilder:validation:XValidation:message="DataDirHostPath is immutable",rule="self == oldSelf"
 	// +optional
 	DataDirHostPath string `json:"dataDirHostPath,omitempty"`
 
+	// zhou: if set to true Rook won't perform any upgrade checks on Ceph daemons during an upgrade.
+	//       Use this at YOUR OWN RISK, only if you know what you're doing.
+
 	// SkipUpgradeChecks defines if an upgrade should be forced even if one of the check fails
 	// +optional
 	SkipUpgradeChecks bool `json:"skipUpgradeChecks,omitempty"`
+
+	// zhou: if set to true Rook will continue the OSD daemon upgrade process even if the PGs are not clean,
+	//       or continue with the MDS upgrade even the file system is not healthy.
 
 	// ContinueUpgradeAfterChecksEvenIfNotHealthy defines if an upgrade should continue even if PGs are not clean
 	// +optional
@@ -162,6 +185,8 @@ type ClusterSpec struct {
 	// +optional
 	WaitTimeoutForHealthyOSDInMinutes time.Duration `json:"waitTimeoutForHealthyOSDInMinutes,omitempty"`
 
+	// zhou: if set to true OSD upgrade process won't start until PGs are healthy.
+
 	// UpgradeOSDRequiresHealthyPGs defines if OSD upgrade requires PGs are clean. If set to `true` OSD upgrade process won't start until PGs are healthy.
 	// This configuration will be ignored if `skipUpgradeChecks` is `true`.
 	// Default is false.
@@ -173,31 +198,48 @@ type ClusterSpec struct {
 	// +optional
 	DisruptionManagement DisruptionManagementSpec `json:"disruptionManagement,omitempty"`
 
+	// zhou: contains mon related options mon settings.
+
 	// A spec for mon related options
 	// +optional
 	// +nullable
 	Mon MonSpec `json:"mon,omitempty"`
+
+	// zhou: The settings for crash collector daemon.
 
 	// A spec for the crash controller
 	// +optional
 	// +nullable
 	CrashCollector CrashCollectorSpec `json:"crashCollector,omitempty"`
 
+	// zhou: Settings for the Ceph dashboard.
+
 	// Dashboard settings
 	// +optional
 	// +nullable
 	Dashboard DashboardSpec `json:"dashboard,omitempty"`
+
+	// zhou: Settings for monitoring Ceph using Prometheus.
 
 	// Prometheus based Monitoring settings
 	// +optional
 	// +nullable
 	Monitoring MonitoringSpec `json:"monitoring,omitempty"`
 
+	// zhou: anything will be created in this case?
+	//       This mode is intended to connect to an existing cluster.
+	//       In this case, Rook will only consume the external cluster.
+	//
+	//       However, Rook will be able to deploy various daemons in Kubernetes such as object gateways,
+	//       mds and nfs if an image is provided and will refuse otherwise
+
 	// Whether the Ceph Cluster is running external to this Kubernetes cluster
 	// mon, mgr, osd, mds, and discover daemons will not be created for external clusters.
 	// +optional
 	// +nullable
 	External ExternalSpec `json:"external,omitempty"`
+
+	// zhou: manager top level section
 
 	// A spec for mgr related options
 	// +optional
@@ -223,6 +265,8 @@ type ClusterSpec struct {
 	// +optional
 	// +nullable
 	Security SecuritySpec `json:"security,omitempty"`
+
+	// zhou: The settings for log collector daemon.
 
 	// Logging represents loggings settings
 	// +optional
@@ -334,10 +378,15 @@ type KeyRotationSpec struct {
 
 // CephVersionSpec represents the settings for the Ceph version that Rook is orchestrating.
 type CephVersionSpec struct {
+
+	// zhou: looks like single container image for all daemons.
+
 	// Image is the container image used to launch the ceph daemons, such as quay.io/ceph/ceph:<tag>
 	// The full list of images can be found at https://quay.io/repository/ceph/ceph?tab=tags
 	// +optional
 	Image string `json:"image,omitempty"`
+
+	// zhou: If true, allow an unsupported major version of the Ceph release.
 
 	// Whether to allow unsupported versions (do not set to true in production)
 	// +optional
@@ -703,7 +752,9 @@ type CrashCollectorSpec struct {
 	DaysToRetain uint `json:"daysToRetain,omitempty"`
 }
 
-// +genclient
+// zhou: RADOS Pool
+
+// +genclien
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
@@ -738,6 +789,8 @@ const (
 	// DefaultCRUSHRoot is the default name of the CRUSH root bucket
 	DefaultCRUSHRoot = "default"
 )
+
+// zhou: README,
 
 // PoolSpec represents the spec of ceph pool
 type PoolSpec struct {
@@ -1008,6 +1061,8 @@ type Status struct {
 	ObservedGeneration int64       `json:"observedGeneration,omitempty"`
 	Conditions         []Condition `json:"conditions,omitempty"`
 }
+
+// zhou:
 
 // ReplicatedSpec represents the spec for replication in a pool
 type ReplicatedSpec struct {
@@ -2155,6 +2210,8 @@ type RGWServiceSpec struct {
 	Annotations Annotations `json:"annotations,omitempty"`
 }
 
+// zhou: enable Ceph NFS server
+
 // +genclient
 // +genclient:noStatus
 // +kubebuilder:resource:shortName=nfs,path=cephnfses
@@ -2194,6 +2251,8 @@ type NFSGaneshaSpec struct {
 	// +optional
 	Security *NFSSecuritySpec `json:"security"`
 }
+
+// zhou: deprecated
 
 // GaneshaRADOSSpec represents the specification of a Ganesha RADOS object
 type GaneshaRADOSSpec struct {
@@ -2816,6 +2875,8 @@ const (
 	// IPv4 internet protocol version
 	IPv4 IPFamilyType = "IPv4"
 )
+
+// zhou: Storage selection and configuration that will be used across the cluster
 
 type StorageScopeSpec struct {
 	// +nullable

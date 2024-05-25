@@ -527,6 +527,8 @@ func (c *Cluster) initClusterInfo(cephVersion cephver.CephVersion, clusterName s
 	return nil
 }
 
+// zhou:
+
 func (c *Cluster) initMonConfig(size int) (int, []*monConfig, error) {
 
 	// initialize the mon pod info for mons that have been previously created
@@ -549,6 +551,8 @@ func (c *Cluster) initMonConfig(size int) (int, []*monConfig, error) {
 func (c *Cluster) clusterInfoToMonConfig() []*monConfig {
 	return c.clusterInfoToMonConfigWithExclude("")
 }
+
+// zhou: README,
 
 func (c *Cluster) clusterInfoToMonConfigWithExclude(excludedMon string) []*monConfig {
 	mons := []*monConfig{}

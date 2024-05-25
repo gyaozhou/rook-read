@@ -3,6 +3,9 @@
 /.cache
 /.idea
 
+cscope.files
+cscope.out
+
 /_output
 
 /tests/integration/rook-test/

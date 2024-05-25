@@ -201,6 +201,8 @@ func (c *Cluster) createDeviceSetPVCsForIndex(newDeviceSet cephv1.StorageClassDe
 	}
 }
 
+// zhou: README,
+
 func (c *Cluster) createDeviceSetPVC(existingPVCs map[string]*v1.PersistentVolumeClaim, deviceSetName string, pvcTemplate v1.PersistentVolumeClaim, setIndex int) (*v1.PersistentVolumeClaim, error) {
 	// old labels and PVC ID for backward compatibility
 	pvcID := legacyDeviceSetPVCID(deviceSetName, setIndex)
@@ -236,6 +238,8 @@ func (c *Cluster) createDeviceSetPVC(existingPVCs map[string]*v1.PersistentVolum
 
 	return deployedPVC, nil
 }
+
+// zhou:
 
 func makeDeviceSetPVC(deviceSetName, pvcID string, setIndex int, pvcTemplate v1.PersistentVolumeClaim, namespace string, cephImage string, rookImage string) *v1.PersistentVolumeClaim {
 	pvcLabels := makeStorageClassDeviceSetPVCLabel(deviceSetName, pvcID, setIndex, cephImage, rookImage)

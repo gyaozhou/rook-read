@@ -172,6 +172,8 @@ func (c *cluster) reconcileCephDaemons(rookImage string, cephVersion cephver.Cep
 	return nil
 }
 
+// zhou: README,
+
 func (c *ClusterController) initializeCluster(cluster *cluster) error {
 	// Check if the dataDirHostPath is located in the disallowed paths list
 	cleanDataDirHostPath := path.Clean(cluster.Spec.DataDirHostPath)

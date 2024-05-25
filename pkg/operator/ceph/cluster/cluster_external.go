@@ -39,6 +39,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// zhou: README,
+
 func (c *ClusterController) configureExternalCephCluster(cluster *cluster) error {
 	// Make sure the spec contains all the information we need
 	err := validateExternalClusterSpec(cluster)

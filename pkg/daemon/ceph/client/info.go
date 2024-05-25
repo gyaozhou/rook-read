@@ -59,6 +59,8 @@ type ClusterInfo struct {
 	Context context.Context
 }
 
+// zhou:
+
 // MonInfo is a collection of information about a Ceph mon.
 type MonInfo struct {
 	Name     string `json:"name"`
